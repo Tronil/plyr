@@ -1275,7 +1275,7 @@
                 // Only load external sprite using AJAX
                 if (iconUrl.absolute) {
                     _log('AJAX loading absolute SVG sprite' + (plyr.browser.isIE ? ' (due to IE)' : ''));
-                    loadSprite(iconUrl.url, "sprite-plyr");
+                    loadSprite(iconUrl.url, "sprite-plyr", plyr.container);
                 } else {
                     _log('Sprite will be used as external resource directly');
                 }
@@ -2875,10 +2875,13 @@
             function getFocusElement() {
                 var focused = document.activeElement;
 
+                // For shadow DOMs we need to keep digging down through the DOMs
+                while (focused && focused.shadowRoot && focused.shadowRoot.activeElement) {
+                    focused = focused.shadowRoot.activeElement;
+                }
+
                 if (!focused || focused === document.body) {
                     focused = null;
-                } else {
-                    focused = document.querySelector(':focus');
                 }
 
                 return focused;
@@ -3511,11 +3514,16 @@
     }
 
     // Load a sprite
-    function loadSprite(url, id) {
+    function loadSprite(url, id, playerContainer) {
         var x = new XMLHttpRequest();
 
+        var rootNode = document.body;
+        if (playerContainer.getRootNode) {
+            rootNode = playerContainer.getRootNode();
+        }
+
         // If the id is set and sprite exists, bail
-        if (_is.string(id) && _is.htmlElement(document.querySelector('#' + id))) {
+        if (_is.string(id) && _is.htmlElement(rootNode.querySelector('#' + id))) {
             return;
         }
 
@@ -3525,7 +3533,8 @@
         if (_is.string(id)) {
             container.setAttribute('id', id);
         }
-        document.body.insertBefore(container, document.body.childNodes[0]);
+
+        rootNode.insertBefore(container, rootNode.childNodes[0]);
 
         // Check for CORS support
         if ('withCredentials' in x) {
