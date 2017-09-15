@@ -75,6 +75,7 @@
                 rewind:         '[data-plyr="rewind"]',
                 forward:        '[data-plyr="fast-forward"]',
                 mute:           '[data-plyr="mute"]',
+                volume:         '[data-plyr="volume"]',
                 captions:       '[data-plyr="captions"]',
                 fullscreen:     '[data-plyr="fullscreen"]'
             },
@@ -1344,6 +1345,7 @@
 
                 // Inputs
                 plyr.buttons.mute             = _getElement(config.selectors.buttons.mute);
+                plyr.buttons.volume           = _getElement(config.selectors.buttons.volume);
                 plyr.buttons.captions         = _getElement(config.selectors.buttons.captions);
 
                 // Progress
