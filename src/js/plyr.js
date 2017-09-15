@@ -3025,7 +3025,7 @@
                     checkTabFocus(focused);
                 }
             });
-            _on(document.body, 'click', function() {
+            _on(document.body, 'mousedown', function() {
                 _toggleClass(_getElement('.' + config.classes.tabFocus), config.classes.tabFocus, false);
             });
             for (var button in plyr.buttons) {
