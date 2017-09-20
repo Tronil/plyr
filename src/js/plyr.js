@@ -3475,6 +3475,7 @@
             togglePlay:         _togglePlay,
             toggleMute:         _toggleMute,
             toggleCaptions:     _toggleCaptions,
+            setupCaptions:      _setupCaptions,
             toggleFullscreen:   _toggleFullscreen,
             toggleControls:     _toggleControls,
             isFullscreen:       function() { return plyr.isFullscreen || false; },
