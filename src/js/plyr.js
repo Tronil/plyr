@@ -454,7 +454,7 @@
         }
 
         // If a nodelist is passed, call itself on each node
-        if (element instanceof NodeList) {
+        if (element instanceof NodeList || element instanceof Array) {
             for (var x = 0; x < element.length; x++) {
                 if (element[x] instanceof Node) {
                     _toggleListener(element[x], arguments[1], arguments[2], arguments[3]);
