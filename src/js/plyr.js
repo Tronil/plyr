@@ -1190,10 +1190,6 @@
 
         // Display captions container and button (for initialization)
         function _showCaptions() {
-            // If there's no caption toggle, bail
-            if (!plyr.buttons.captions) {
-                return;
-            }
 
             _toggleClass(plyr.container, config.classes.captions.enabled, true);
 
@@ -2326,8 +2322,8 @@
 
         // Toggle captions
         function _toggleCaptions(show) {
-            // If there's no full support, or there's no caption toggle
-            if (!plyr.supported.full || !plyr.buttons.captions) {
+            // If there's no full support
+            if (!plyr.supported.full) {
                 return;
             }
 
