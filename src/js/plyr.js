@@ -945,7 +945,7 @@
 
             // Inject the container
             if (!_getElement(config.selectors.captions)) {
-                plyr.videoContainer.insertAdjacentHTML('afterbegin', '<div class="' + _getClassname(config.selectors.captions) + '"></div>');
+                plyr.videoContainer.insertAdjacentHTML('beforeend', '<div class="' + _getClassname(config.selectors.captions) + '"></div>');
             }
 
             // Determine if HTML5 textTracks is supported
