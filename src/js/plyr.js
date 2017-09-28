@@ -2850,8 +2850,14 @@
                 // Get the last play button to account for the large play button
                 if (target && target.length > 1) {
                     target = target[target.length - 1];
-                } else {
+                } else  if (target && target.length === 1) {
                     target = target[0];
+                }
+
+                if (trigger && trigger.length > 1) {
+                    trigger = trigger[trigger.length - 1];
+                } else  if (trigger && trigger.length === 1) {
+                    trigger = trigger[0];
                 }
 
                 // Setup focus and tab focus
