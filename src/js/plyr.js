@@ -477,11 +477,11 @@
     }
 
     // Unbind event
-    /*function _off(element, events, callback, useCapture) {
+    function _off(element, events, callback, useCapture) {
         if (element) {
             _toggleListener(element, events, callback, false, useCapture);
         }
-    }*/
+    }
 
     // Trigger event
     function _event(element, type, bubbles, properties) {
@@ -718,7 +718,6 @@
 
         // Set media
         plyr.media = media;
-        var original = media.cloneNode(true);
 
         // Trigger events, with plyr instance passed
         function _triggerEvent(element, type, bubbles, properties) {
@@ -2365,6 +2364,22 @@
             }, (loading ? 250 : 0));
         }
 
+        function _mediaEnded() {
+            // Show poster on end
+            if (plyr.type === 'video' && config.showPosterOnEnd) {
+                // Clear
+                if (plyr.type === 'video') {
+                    _setCaption();
+                }
+
+                // Restart
+                _seek();
+
+                // Re-load media
+                plyr.media.load();
+            }
+        }
+
         // Update <progress> elements
         function _updateProgress(event) {
             if (!plyr.supported.full) {
@@ -3138,21 +3153,7 @@
             _on(plyr.media, 'durationchange loadedmetadata', _displayDuration);
 
             // Handle the media finishing
-            _on(plyr.media, 'ended', function() {
-                // Show poster on end
-                if (plyr.type === 'video' && config.showPosterOnEnd) {
-                    // Clear
-                    if (plyr.type === 'video') {
-                        _setCaption();
-                    }
-
-                    // Restart
-                    _seek();
-
-                    // Re-load media
-                    plyr.media.load();
-                }
-            });
+            _on(plyr.media, 'ended', _mediaEnded);
 
             // Check for buffer progress
             _on(plyr.media, 'progress playing', _updateProgress);
@@ -3199,14 +3200,20 @@
 
             // Disable right click
             if (config.disableContextMenu) {
-                _on(plyr.media, 'contextmenu', function(event) { event.preventDefault(); });
+                _on(plyr.media, 'contextmenu', _preventDefault);
             }
 
             // Proxy events to container
             // Bubble up key events for Edge
-            _on(plyr.media, config.events.concat(['keyup', 'keydown']).join(' '), function(event) {
-                _triggerEvent(plyr.container, event.type, true);
-            });
+            _on(plyr.media, config.events.concat(['keyup', 'keydown']).join(' '), _proxyEvent);
+        }
+
+        function _preventDefault(event) {
+            event.preventDefault();
+        }
+
+        function _proxyEvent(event) {
+            _triggerEvent(plyr.container, event.type, true);
         }
 
         // Cancel current network requests
@@ -3291,7 +3298,7 @@
 
                 // Callback
                 if (_is.function(callback)) {
-                    callback.call(original);
+                    callback.call(plyr.media);
                 }
 
                 // Bail if we don't need to restore the original element
@@ -3303,13 +3310,27 @@
                 plyr.init = false;
 
                 // Replace the container with the original element provided
-                plyr.container.parentNode.replaceChild(original, plyr.container);
+                plyr.container.parentNode.replaceChild(plyr.media, plyr.container);
 
                 // Allow overflow (set on fullscreen)
                 document.body.style.overflow = '';
 
+                // Remove event listeners
+                _off(plyr.media, 'timeupdate seeking', _timeUpdate);
+                _off(plyr.media, 'timeupdate', _seekManualCaptions);
+                _off(plyr.media, 'durationchange loadedmetadata', _displayDuration);
+                _off(plyr.media, 'ended', _mediaEnded);
+                _off(plyr.media, 'progress playing', _updateProgress);
+                _off(plyr.media, 'volumechange', _updateVolume);
+                _off(plyr.media, 'play pause ended', _checkPlaying);
+                _off(plyr.media, 'waiting canplay seeked', _checkLoading);
+                _off(plyr.media, 'contextmenu', _preventDefault);
+                _off(plyr.media, config.events.concat(['keyup', 'keydown']).join(' '), _proxyEvent);
+
                 // Event
-                _triggerEvent(original, 'destroyed', true);
+                _triggerEvent(plyr.media, 'destroyed', true);
+
+                plyr.media = null;
             }
         }
 
